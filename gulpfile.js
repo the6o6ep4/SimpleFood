@@ -2,11 +2,11 @@ const { src, dest, watch, parallel, series } = require("gulp");
 const sass = require("gulp-sass")(require("sass"));
 const concat = require("gulp-concat");
 const uglify = require("gulp-uglify");
+const del = require("del");
 const browserSync = require("browser-sync").create();
 
-async function cleanDist() {
-  const del = (await import("del")).default;
-  return del(["dist"]);
+function cleanDist() {
+  return del("dist");
 }
 
 function browsersync() {
@@ -87,11 +87,14 @@ function watching() {
   watch("app/**/*.html").on("change", browserSync.reload);
 }
 
-exports.init = series(cleanDist, parallel(styles, scripts, images), build);
+// exports.init = series(cleanDist, parallel(styles, scripts, images), build);
 exports.styles = styles;
 exports.scripts = scripts;
 exports.browsersync = browsersync;
 exports.watching = watching;
 exports.images = images;
 exports.build = build;
+exports.cleanDist = cleanDist;
+exports.build = series(cleanDist, images, build);
+
 exports.default = parallel(styles, scripts, browsersync, watching);
